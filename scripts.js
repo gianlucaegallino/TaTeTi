@@ -42,9 +42,25 @@ const Game = function () {
   };
 
   let isRunning = true;
+  let turnCount = 0;
+  let currentPlayer;
   while (isRunning) {
-    // Make game work!
+    //Calculates player turn
+    currentPlayer = turncount % 2 == 0 ? player1 : player2;
+
+    //Gets the position in which to insert.
+    console.log("Turn " + turnCount + ", " + currentPlayer.name + "'s turn.");
+    console.log("Enter row to modify");
+    let row = console.readLine();
+    console.log("Enter column to modify");
+    let col = console.readLine();
+    //Sets users input in the array
+    Gameboard.getBoard[row][col].setCellStatus(currentPlayer.value);
+    turnCount++;
   }
+  // TODO: Check that plays cant be overwritter
+  // TODO: Verify inputs
+  // TODO: Add Win conditions.
 };
 
 //Function for name request
