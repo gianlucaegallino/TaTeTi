@@ -15,8 +15,8 @@ footer {
 body{
   font-family: Outfit, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
   sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-background-color: #3a3a3a;
-color: white;
+background-color: #242424;
+color: rgb(254, 255, 246);
 width: 100vw;
 height: 100vh;
 display: flex;
