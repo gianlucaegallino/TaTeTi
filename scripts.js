@@ -48,10 +48,12 @@ const Game = function () {
     currentPlayer = turncount % 2 == 0 ? player1 : player2;
     getPlay(turnCount, currentPlayer.name);
     turnCount++;
-    checkForWin(currentPlayer.value);
+    //Checks for victory
+    if (checkForWin()){
+      console.log (currentPlayer.name + " has won!")
+      isRunning = false;
+    }
   }
-  // TODO: Verify inputs
-  // TODO: Add Win conditions.
 };
 
 //Function for name request
@@ -78,6 +80,22 @@ function getPlay(turn, name) {
       filledCorrectly = true;
     } else console.log("That spot is already filled.");
   }
+}
+
+function checkForWin(){
+  const board = Gameboard.getBoard();
+  let hasWon = false;
+  //Check for rows
+  for (let i = 0; i<3; i++){
+    if (board[i][0].value == board[i][1].value == board[i][2].value) hasWon = true;
+  }
+  //Check for columns
+  for (let i = 0; i<3; i++){
+    if (board[0][i].value == board[1][i].value == board[2][i].value) hasWon = true;
+  }
+  //Check for diagonals 
+  if (board[0][0].value == board[1][1] == board[2][2] || board[0][2].value == board[1][1].value == board[2][0].value) hasWon = true;
+  return hasWon;
 }
 
 // TODO: DisplayController IIFE
