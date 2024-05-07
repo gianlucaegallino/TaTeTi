@@ -1,3 +1,44 @@
+// TODO: DisplayController IIFE
+DisplayController = function () {
+  function updateVisualGrid(num, value) {
+    const toModify = document.querySelector(`#gameGrid :nth-child(${num})`);
+    toModify.innerHTML = `<p>${value}</p>`;
+  }
+  function updateInfoBanner(input) {
+    const banner = document.querySelector(".gameInfo");
+    banner.textContent = `${input}`;
+  }
+  function showForm() {
+    let gameDiv = document.querySelector(".gameDiv");
+    gameDiv.innerHTML = `<form method="post" action = "" class="myForm">
+    <label for="Player1">Enter player 1's name:</label>
+    <input required placeholder="Player1" type="text" class="Player1">
+    <label for="Player2">Enter player 2's name:</label>
+    <input required placeholder="Player2" type="text" class="Player2">
+    <button type="submit" class="startGameBtn">Start Game!</button>
+</form>`;
+const banner = document.querySelector(".gameInfo");
+banner.textContent = "Enter player names below to start the game:";
+  }
+  function showPlayingGrid() {
+    let gameDiv = document.querySelector(".gameDiv");
+    gameDiv.innerHTML = `<div id="gameGrid">
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+    <div class="gridSquare"> </div>
+</div>`;
+  }
+
+  return { updateVisualGrid, updateInfoBanner, showPlayingGrid, showForm };
+};
+
+/*
 // Player factory
 function createPlayer(nam, val) {
   const name = nam;
@@ -35,11 +76,7 @@ function createCell() {
     return { getBoard, resetBoard };
   };
 
-// TODO: DisplayController IIFE
-DisplayController = function () {
-  const grid = document.querySelector("PlayingGrid");
-  
-}
+
 // Game IIFE
 
  Game = function () {
@@ -103,3 +140,4 @@ function checkForWin(){
 }
 
  let myGame = Game();
+ */

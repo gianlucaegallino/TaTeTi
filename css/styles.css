@@ -24,3 +24,20 @@ flex-direction: column;
 justify-content: space-between;
 align-items: center;
 }
+
+.gridSquare{
+  border: 1px solid red;
+  height: 30px;
+  width: 30px;
+  padding: 1rem;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+}
+
+.gameGrid{
+  display: grid;
+  place-content: center;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(3, 64px);
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,22 +12,23 @@
     <!-- local stylesheet -->
     <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
-    <header><h1>TaTeTi!</h1></header>
+    <header>
+        <h1>TaTeTi!</h1>
+    </header>
     <main>
-        <div class="gameArea">
-            <h2 class="gameInfo">The game hasnt started yet.</h2>
-            <div class="gameGrid">
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-                <div class="gridSquare"></div>
-            </div>
+        <h2 class="gameInfo">Enter player names below to start the game:
+        </h2>
+        <div class="gameDiv">
+            <form method="post" action="" class="myForm">
+                <label for="Player1">Enter player 1's name:</label>
+                <input required placeholder="Player1" type="text" class="Player1">
+                <label for="Player2">Enter player 2's name:</label>
+                <input required placeholder="Player2" type="text" class="Player2">
+                <button type="submit" class="startGameBtn">Start Game!</button>
+            </form>
+
         </div>
     </main>
     <footer>
@@ -36,7 +38,7 @@
                 frameborder="0" scrolling="0" width="232" height="30" title="GitHub"></iframe>
         </div>
     </footer>
-    <script src="./scripts.js"></script>
+    <script defer src="./scripts.js"></script>
 </body>
-</html>
 
+</html>
