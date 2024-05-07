@@ -1,7 +1,7 @@
 // Player factory
-function createPlayer(name, value) {
-  const name = name;
-  const value = value;
+function createPlayer(nam, val) {
+  const name = nam;
+  const value = val;
   return { name, value };
 }
 
@@ -16,11 +16,6 @@ function createCell() {
   return { getCellStatus, setCellStatus };
 }
 
-// Game IIFE
-
-const Game = function () {
-  const player1 = createPlayer(askForName(1), 1);
-  const player2 = createPlayer(askForName(2), 2);
   // Gameboard IIFE
   const Gameboard = function () {
     const size = 3;
@@ -40,13 +35,28 @@ const Game = function () {
     return { getBoard, resetBoard };
   };
 
+// TODO: DisplayController IIFE
+DisplayController = function () {
+  const grid = document.querySelector("PlayingGrid");
+  
+}
+// Game IIFE
+
+ Game = function () {
+  const name1 = "TestName1";
+  const player1 = createPlayer(name1, "X");
+  console.log(player1);
+  const name2 = "TestName2"
+  const player2 = createPlayer(name2, "O");
+  console.log(player2);
+
   let isRunning = true;
   let turnCount = 0;
   let currentPlayer;
   while (isRunning) {
     //Calculates player turn
-    currentPlayer = turncount % 2 == 0 ? player1 : player2;
-    getPlay(turnCount, currentPlayer.name);
+    currentPlayer = turnCount % 2 == 0 ? player1 : player2;
+    getPlay(turnCount, currentPlayer.name, currentPlayer.value);
     turnCount++;
     //Checks for victory
     if (checkForWin()){
@@ -56,27 +66,21 @@ const Game = function () {
   }
 };
 
-//Function for name request
-function askForName(playerNo) {
-  console.log("Enter player " + playerNo + "'s name: ");
-  return console.readLine();
-}
-
 //Function for play input
-function getPlay(turn, name) {
+function getPlay(turn, name, value) {
   let filledCorrectly = false;
   while (!filledCorrectly) {
     //Gets the position in which to insert.
     console.log("Turn " + turn + ", " + name + "'s turn.");
     console.log("Enter row to modify");
-    let row = console.readLine();
+    let row = parseInt(prompt());
     console.log("Enter column to modify");
-    let col = console.readLine();
+    let col = parseInt(prompt());
 
     //Checks if the place isnt filled.
-    if (Gameboard.getBoard[row][col].getCellStatus != 0) {
+    if (Gameboard.getBoard[row][col].getCellStatus() != 0) {
       //Sets users input in the array
-      Gameboard.getBoard[row][col].setCellStatus(currentPlayer.value);
+      Gameboard.getBoard[row][col].setCellStatus(value);
       filledCorrectly = true;
     } else console.log("That spot is already filled.");
   }
@@ -98,4 +102,4 @@ function checkForWin(){
   return hasWon;
 }
 
-// TODO: DisplayController IIFE
+ let myGame = Game();
