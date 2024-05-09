@@ -45,7 +45,7 @@ align-items: center;
 .gridSquare:hover, button:hover{
   cursor: pointer;
 }
-.extraContent{
+.extraContent, .infoDiv{
   display: flex;
   justify-content: center;
   align-content: center;

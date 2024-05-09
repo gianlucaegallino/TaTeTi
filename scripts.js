@@ -31,13 +31,13 @@ const DisplayController = (function () {
 
   function showForm() {
     let gameDiv = document.querySelector(".gameDiv");
-    gameDiv.innerHTML = `<form method="post" action = "" class="myForm">
+    gameDiv.innerHTML = `<form method="post" action="" class="myForm">
     <label for="Player1">Enter player 1's name:</label>
     <input required placeholder="Player1" type="text" class="Player1">
     <label for="Player2">Enter player 2's name:</label>
     <input required placeholder="Player2" type="text" class="Player2">
     <button type="submit" class="startGameBtn">Start Game!</button>
-  </form>`;
+</form> `;
     updateInfoBanner("Enter player names to start the game:");
   }
 
@@ -76,6 +76,18 @@ const DisplayController = (function () {
     });
   }
 
+  function addFormListener() {
+    const formBtn = document.querySelector(".startGameBtn");
+    formBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      const player1 = document.querySelector(".Player1");
+      const player2 = document.querySelector(".Player2");
+      let name1 = player1.value;
+      let name2 = player2.value;
+      Game.startGame(name1, name2);
+    });
+  }
+
   return {
     updateVisualGrid,
     updateInfoBanner,
@@ -83,6 +95,7 @@ const DisplayController = (function () {
     showForm,
     addCellListeners,
     removeCellListeners,
+    addFormListener
   };
 })();
 
@@ -129,17 +142,21 @@ const Game = (function () {
 
   const getTurnCount = () => turnCount;
 
-  const startGame = function () {
+  const getInfo = function(){
+    DisplayController.showForm();
+    DisplayController.addFormListener();
+  }
+
+  const startGame = function (n1, n2) {
+    name1 = n1;
+    name2 = n2;
     turnCount = 1;
-    //TODO: IMPLEMENT GETTING NAMES
-    name1 = "TestName1";
-    player1 = createPlayer(name1, "X");
-    name2 = "TestName2";
-    player2 = createPlayer(name2, "O");
+    player1 = createPlayer(n1, "X");
+    player2 = createPlayer(n2, "O");
 
     //Sets playScreen and adds listeners to the grid
     Gameboard.resetBoard();
-    DisplayController.updateInfoBanner("Turn 1, " + name1 + "'s turn.");
+    DisplayController.updateInfoBanner("Turn 1, " + n1 + "'s turn.");
     DisplayController.showPlayingGrid();
     DisplayController.addCellListeners();
   };
@@ -159,7 +176,6 @@ const Game = (function () {
     //Gets other necessary values
     const board = Gameboard.getBoard();
     const val = Game.getCurrentPlayer().value;
-    const currentName = Game.getCurrentPlayer().name;
     const otherName = Game.getOtherPlayer().name;
 
     //Checks if the place isnt filled.
@@ -205,7 +221,7 @@ const Game = (function () {
     //removes reset button from DOM
     let section = document.querySelector(".extraContent");
     section.innerHTML = "";
-    Game.startGame();
+    Game.getInfo();
   };
 
   const checkForWin = function (value) {
@@ -266,7 +282,8 @@ const Game = (function () {
     startGame,
     getTurnCount,
     handlePlay,
+    getInfo
   };
 })();
 
-Game.startGame();
+Game.getInfo();
