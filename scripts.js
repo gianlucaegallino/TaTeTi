@@ -116,9 +116,7 @@ const Gameboard = (function () {
 // Game Module
 
 const Game = (function () {
-  let name1,player1,name2,player2,turnCount;
-
-
+  let name1, player1, name2, player2, turnCount;
 
   const getCurrentPlayer = function () {
     return turnCount % 2 == 0 ? player2 : player1;
@@ -132,6 +130,8 @@ const Game = (function () {
     turnCount++;
   };
 
+  const getTurnCount = () => turnCount;
+
   const startGame = function () {
     //TODO: IMPLEMENT GETTING NAMES
     name1 = "TestName1";
@@ -142,7 +142,9 @@ const Game = (function () {
 
     //Sets playScreen and adds listeners to the grid
     Gameboard.resetBoard();
-    DisplayController.updateInfoBanner(name1 + "'s turn.");
+    DisplayController.updateInfoBanner(
+      "Turn 1, " + name1 + "'s turn."
+    );
     DisplayController.showPlayingGrid();
     DisplayController.addCellListeners();
   };
@@ -150,7 +152,13 @@ const Game = (function () {
   //starts the game
   startGame();
 
-  return { getCurrentPlayer, getOtherPlayer, increaseTurnCount, startGame};
+  return {
+    getCurrentPlayer,
+    getOtherPlayer,
+    increaseTurnCount,
+    startGame,
+    getTurnCount,
+  };
 })();
 
 function handlePlay(squareNum) {
@@ -177,33 +185,39 @@ function handlePlay(squareNum) {
     board[row][col].setCellStatus(val);
     DisplayController.updateVisualGrid(squareNum, val);
 
+    Game.increaseTurnCount();
     //Checks for victory
     checkForWin(val) == true
-      ? handleVictory(Game.getCurrentPlayer())
-      : DisplayController.updateInfoBanner(otherName + "'s turn.");
+      ? handleEnding(Game.getCurrentPlayer(), true)
+      : DisplayController.updateInfoBanner(
+          "Turn " + Game.getTurnCount() + ", " + otherName + "'s turn."
+        );
 
-    Game.increaseTurnCount();
+    //Checks for stalemate
+    if (Game.getTurnCount() == 10) handleEnding(Game.getCurrentPlayer(), false);
   } else {
     DisplayController.updateInfoBanner("That spot is already filled.");
   }
 }
 
-function handleVictory(player) {
-  DisplayController.updateInfoBanner(player.name + " has won!");
+function handleEnding(player, isVictory) {
+  isVictory
+    ? DisplayController.updateInfoBanner(player.name + " has won!")
+    : DisplayController.updateInfoBanner("Its a tie!");
   DisplayController.removeCellListeners();
 
   //Add button for resetting
-  let section = document.querySelector(".extraContent")
-  section.innerHTML= `<button class="resetButton" type="button">Play Again!</button>`;
+  let section = document.querySelector(".extraContent");
+  section.innerHTML = `<button class="resetButton" type="button">Play Again!</button>`;
   //Add corresponding listener
   let resetBtn = document.querySelector(".resetButton");
-  resetBtn.addEventListener('click', resetGame);
+  resetBtn.addEventListener("click", resetGame);
 }
 
-function resetGame(){
+function resetGame() {
   //removes reset button from DOM
-  let section = document.querySelector(".extraContent")
-  section.innerHTML= ""
+  let section = document.querySelector(".extraContent");
+  section.innerHTML = "";
   Game.startGame();
 }
 
