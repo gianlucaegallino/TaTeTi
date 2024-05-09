@@ -1,7 +1,6 @@
 // Player factory
 
 function createPlayer(nam, val) {
-  console.log("createPlayer ran");
   const name = nam;
   const value = val;
   return { name, value };
@@ -9,7 +8,6 @@ function createPlayer(nam, val) {
 
 // Cell factory
 function createCell() {
-  console.log("createCell ran");
   let filledBy = 0;
   const getCellStatus = () => filledBy;
   const setCellStatus = function (id) {
@@ -21,7 +19,6 @@ function createCell() {
 // DisplayController Module
 
 const DisplayController = (function () {
-  console.log("DisplayController ran");
   function updateVisualGrid(num, value) {
     const toModify = document.querySelector(`[data-square='${num}']`);
     toModify.innerHTML = `<p>${value}</p>`;
@@ -91,7 +88,6 @@ const DisplayController = (function () {
 
 // Game board Module
 const Gameboard = (function () {
-  console.log("Gameboard ran");
   const size = 3;
   let board = [];
 
@@ -213,7 +209,6 @@ const Game = (function () {
   };
 
   const checkForWin = function (value) {
-    console.log("checkForWin ran");
     const board = Gameboard.getBoard();
     let hasWon = false;
 
@@ -234,7 +229,6 @@ const Game = (function () {
         statArray[n] == value
       ) {
         hasWon = true;
-        console.log("test a");
       }
       n += 3;
     }
@@ -247,7 +241,6 @@ const Game = (function () {
         statArray[n] == value
       ) {
         hasWon = true;
-        console.log("test b");
       }
       n += 1;
     }
@@ -261,7 +254,6 @@ const Game = (function () {
         statArray[2] == value)
     ) {
       hasWon = true;
-      console.log("test c");
     }
 
     return hasWon;
