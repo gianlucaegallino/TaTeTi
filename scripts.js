@@ -261,8 +261,6 @@ const Game = (function () {
     return hasWon;
   }
 
-
-
   return {
     getCurrentPlayer,
     getOtherPlayer,
@@ -270,8 +268,6 @@ const Game = (function () {
     startGame,
     getTurnCount,
     handlePlay,
-    handleEnding, 
-    checkForWin
   };
 })();
 
