@@ -62,7 +62,7 @@ const DisplayController = (function () {
   //Internal function used for adding and removing listeners
   function clickHandler() {
     const squareNumber = this.dataset.square;
-    handlePlay(squareNumber);
+    Game.handlePlay(squareNumber);
   }
 
   function addCellListeners() {
@@ -149,8 +149,119 @@ const Game = (function () {
     DisplayController.addCellListeners();
   };
 
-  //starts the game
-  startGame();
+  const handlePlay = function(squareNum) {
+    //Converts to int
+    squareNum = parseInt(squareNum);
+  
+    //Gets coordinate positions
+    const row = squareNum <= 3 ? 0 : squareNum <= 6 ? 1 : 2;
+    const col = [1, 4, 7].includes(squareNum)
+      ? 0
+      : [2, 5, 8].includes(squareNum)
+      ? 1
+      : 2;
+  
+    //Gets other necessary values
+    const board = Gameboard.getBoard();
+    const val = Game.getCurrentPlayer().value;
+    const currentName = Game.getCurrentPlayer().name;
+    const otherName = Game.getOtherPlayer().name;
+  
+    //Checks if the place isnt filled.
+    if (board[row][col].getCellStatus() == 0) {
+      //Sets users input in the array
+      board[row][col].setCellStatus(val);
+      DisplayController.updateVisualGrid(squareNum, val);
+  
+      Game.increaseTurnCount();
+      //Checks for victory
+      checkForWin(val) == true
+        ? handleEnding(Game.getCurrentPlayer(), true)
+        : DisplayController.updateInfoBanner(
+            "Turn " + Game.getTurnCount() + ", " + otherName + "'s turn."
+          );
+  
+      //Checks for stalemate
+      if (Game.getTurnCount() == 10) handleEnding(Game.getCurrentPlayer(), false);
+    } else {
+      DisplayController.updateInfoBanner("That spot is already filled.");
+    }
+  }
+  
+  const handleEnding = function(player, isVictory) {
+    isVictory
+      ? DisplayController.updateInfoBanner(player.name + " has won!")
+      : DisplayController.updateInfoBanner("Its a tie!");
+    DisplayController.removeCellListeners();
+  
+    //Add button for resetting
+    let section = document.querySelector(".extraContent");
+    section.innerHTML = `<button class="resetButton" type="button">Play Again!</button>`;
+    //Add corresponding listener
+    let resetBtn = document.querySelector(".resetButton");
+    resetBtn.addEventListener("click", resetGame);
+  }
+  
+  const resetGame = function() {
+    //removes reset button from DOM
+    let section = document.querySelector(".extraContent");
+    section.innerHTML = "";
+    Game.startGame();
+  }
+  
+  const checkForWin = function(value) {
+    console.log("checkForWin ran");
+    const board = Gameboard.getBoard();
+    let hasWon = false;
+  
+    //Loads cell statuses for easy checking
+    let statArray = [];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        statArray.push(board[i][j].getCellStatus());
+      }
+    }
+  
+    //Check for rows
+    let n = 0;
+    for (let i = 0; i < 3; i++) {
+      if (
+        statArray[n] == statArray[n + 1] &&
+        statArray[n] == statArray[n + 2] &&
+        statArray[n] == value
+      ) {
+        hasWon = true;
+      }
+      n += 3;
+    }
+    //Check for columns
+    n = 0;
+    for (let i = 0; i < 3; i++) {
+      if (
+        statArray[n] == statArray[n + 3] &&
+        statArray[n] == statArray[n + 6] &&
+        statArray[n] == value
+      ) {
+        hasWon = true;
+      }
+      n += 1;
+    }
+    //Check for diagonals
+    if (
+      (statArray[0] == statArray[4] &&
+        statArray[0] == statArray[8] &&
+        statArray[0] == value) ||
+      (statArray[2] == statArray[4] &&
+        statArray[2] == statArray[6] &&
+        statArray[2] == value)
+    ) {
+      hasWon = true;
+    }
+  
+    return hasWon;
+  }
+
+
 
   return {
     getCurrentPlayer,
@@ -158,117 +269,11 @@ const Game = (function () {
     increaseTurnCount,
     startGame,
     getTurnCount,
+    handlePlay,
+    handleEnding, 
+    checkForWin
   };
 })();
 
-function handlePlay(squareNum) {
-  //Converts to int
-  squareNum = parseInt(squareNum);
 
-  //Gets coordinate positions
-  const row = squareNum <= 3 ? 0 : squareNum <= 6 ? 1 : 2;
-  const col = [1, 4, 7].includes(squareNum)
-    ? 0
-    : [2, 5, 8].includes(squareNum)
-    ? 1
-    : 2;
-
-  //Gets other necessary values
-  const board = Gameboard.getBoard();
-  const val = Game.getCurrentPlayer().value;
-  const currentName = Game.getCurrentPlayer().name;
-  const otherName = Game.getOtherPlayer().name;
-
-  //Checks if the place isnt filled.
-  if (board[row][col].getCellStatus() == 0) {
-    //Sets users input in the array
-    board[row][col].setCellStatus(val);
-    DisplayController.updateVisualGrid(squareNum, val);
-
-    Game.increaseTurnCount();
-    //Checks for victory
-    checkForWin(val) == true
-      ? handleEnding(Game.getCurrentPlayer(), true)
-      : DisplayController.updateInfoBanner(
-          "Turn " + Game.getTurnCount() + ", " + otherName + "'s turn."
-        );
-
-    //Checks for stalemate
-    if (Game.getTurnCount() == 10) handleEnding(Game.getCurrentPlayer(), false);
-  } else {
-    DisplayController.updateInfoBanner("That spot is already filled.");
-  }
-}
-
-function handleEnding(player, isVictory) {
-  isVictory
-    ? DisplayController.updateInfoBanner(player.name + " has won!")
-    : DisplayController.updateInfoBanner("Its a tie!");
-  DisplayController.removeCellListeners();
-
-  //Add button for resetting
-  let section = document.querySelector(".extraContent");
-  section.innerHTML = `<button class="resetButton" type="button">Play Again!</button>`;
-  //Add corresponding listener
-  let resetBtn = document.querySelector(".resetButton");
-  resetBtn.addEventListener("click", resetGame);
-}
-
-function resetGame() {
-  //removes reset button from DOM
-  let section = document.querySelector(".extraContent");
-  section.innerHTML = "";
-  Game.startGame();
-}
-
-function checkForWin(value) {
-  console.log("checkForWin ran");
-  const board = Gameboard.getBoard();
-  let hasWon = false;
-
-  //Loads cell statuses for easy checking
-  let statArray = [];
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      statArray.push(board[i][j].getCellStatus());
-    }
-  }
-
-  //Check for rows
-  let n = 0;
-  for (let i = 0; i < 3; i++) {
-    if (
-      statArray[n] == statArray[n + 1] &&
-      statArray[n] == statArray[n + 2] &&
-      statArray[n] == value
-    ) {
-      hasWon = true;
-    }
-    n += 3;
-  }
-  //Check for columns
-  n = 0;
-  for (let i = 0; i < 3; i++) {
-    if (
-      statArray[n] == statArray[n + 3] &&
-      statArray[n] == statArray[n + 6] &&
-      statArray[n] == value
-    ) {
-      hasWon = true;
-    }
-    n += 1;
-  }
-  //Check for diagonals
-  if (
-    (statArray[0] == statArray[4] &&
-      statArray[0] == statArray[8] &&
-      statArray[0] == value) ||
-    (statArray[2] == statArray[4] &&
-      statArray[2] == statArray[6] &&
-      statArray[2] == value)
-  ) {
-    hasWon = true;
-  }
-
-  return hasWon;
-}
+Game.startGame();
