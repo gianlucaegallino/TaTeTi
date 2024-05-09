@@ -59,20 +59,23 @@ const DisplayController = (function () {
     </div>`;
   }
 
+  //Internal function used for adding and removing listeners
+  function clickHandler() {
+    const squareNumber = this.dataset.square;
+    handlePlay(squareNumber);
+  }
+
   function addCellListeners() {
     const cells = document.querySelectorAll(".gridSquare");
     cells.forEach((cell) => {
-      cell.addEventListener("click", () => {
-        const squareNumber = cell.dataset.square;
-        handlePlay(squareNumber);
-      });
+      cell.addEventListener("click", clickHandler);
     });
   }
 
   function removeCellListeners() {
     const cells = document.querySelectorAll(".gridSquare");
     cells.forEach((cell) => {
-      cell.removeEventListener("click", handlePlay);
+      cell.removeEventListener("click", clickHandler);
     });
   }
 
@@ -113,21 +116,9 @@ const Gameboard = (function () {
 // Game Module
 
 const Game = (function () {
-  console.log("Game ran");
+  let name1,player1,name2,player2,turnCount;
 
-  //TODO: IMPLEMENT GETTING NAMES
-  const name1 = "TestName1";
-  const player1 = createPlayer(name1, "X");
-  const name2 = "TestName2";
-  const player2 = createPlayer(name2, "O");
 
-  let isRunning = true;
-  let turnCount = 1;
-  console.log("test1");
-  //Sets playScreen and adds listeners to the grid
-  DisplayController.updateInfoBanner("Player 1's turn.");
-  DisplayController.showPlayingGrid();
-  DisplayController.addCellListeners();
 
   const getCurrentPlayer = function () {
     return turnCount % 2 == 0 ? player2 : player1;
@@ -141,12 +132,25 @@ const Game = (function () {
     turnCount++;
   };
 
-  const setRunning = function (input) {
-    isRunning = input;
+  const startGame = function () {
+    //TODO: IMPLEMENT GETTING NAMES
+    name1 = "TestName1";
+    player1 = createPlayer(name1, "X");
+    name2 = "TestName2";
+    player2 = createPlayer(name2, "O");
+    turnCount = 1;
+
+    //Sets playScreen and adds listeners to the grid
+    Gameboard.resetBoard();
+    DisplayController.updateInfoBanner(name1 + "'s turn.");
+    DisplayController.showPlayingGrid();
+    DisplayController.addCellListeners();
   };
 
-  return { getCurrentPlayer, getOtherPlayer, increaseTurnCount, setRunning };
-  //TODO: incorporate
+  //starts the game
+  startGame();
+
+  return { getCurrentPlayer, getOtherPlayer, increaseTurnCount, startGame};
 })();
 
 function handlePlay(squareNum) {
@@ -169,20 +173,24 @@ function handlePlay(squareNum) {
 
   //Checks if the place isnt filled.
   if (board[row][col].getCellStatus() == 0) {
-    
     //Sets users input in the array
     board[row][col].setCellStatus(val);
     DisplayController.updateVisualGrid(squareNum, val);
 
     //Checks for victory
     checkForWin(val) == true
-      ? DisplayController.updateInfoBanner(currentName + " has won!")
+      ? handleVictory(Game.getCurrentPlayer())
       : DisplayController.updateInfoBanner(otherName + "'s turn.");
 
     Game.increaseTurnCount();
   } else {
     DisplayController.updateInfoBanner("That spot is already filled.");
   }
+}
+
+function handleVictory(player) {
+  DisplayController.updateInfoBanner(player.name + " has won!");
+  DisplayController.removeCellListeners();
 }
 
 function checkForWin(value) {
