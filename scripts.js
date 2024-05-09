@@ -1,13 +1,37 @@
-// TODO: DisplayController IIFE
-DisplayController = function () {
+// Player factory
+
+function createPlayer(nam, val) {
+  console.log("createPlayer ran");
+  const name = nam;
+  const value = val;
+  return { name, value };
+}
+
+// Cell factory
+function createCell() {
+  console.log("createCell ran");
+  let filledBy = 0;
+  const getCellStatus = () => filledBy;
+  const setCellStatus = function (id) {
+    filledBy = id;
+  };
+  return { getCellStatus, setCellStatus };
+}
+
+// DisplayController Module
+
+const DisplayController = (function () {
+  console.log("DisplayController ran");
   function updateVisualGrid(num, value) {
-    const toModify = document.querySelector(`#gameGrid :nth-child(${num})`);
+    const toModify = document.querySelector(`[data-square='${num}']`);
     toModify.innerHTML = `<p>${value}</p>`;
   }
+
   function updateInfoBanner(input) {
     const banner = document.querySelector(".gameInfo");
     banner.textContent = `${input}`;
   }
+
   function showForm() {
     let gameDiv = document.querySelector(".gameDiv");
     gameDiv.innerHTML = `<form method="post" action = "" class="myForm">
@@ -16,128 +40,201 @@ DisplayController = function () {
     <label for="Player2">Enter player 2's name:</label>
     <input required placeholder="Player2" type="text" class="Player2">
     <button type="submit" class="startGameBtn">Start Game!</button>
-</form>`;
-const banner = document.querySelector(".gameInfo");
-banner.textContent = "Enter player names below to start the game:";
+  </form>`;
+    updateInfoBanner("Enter player names to start the game:");
   }
+
   function showPlayingGrid() {
     let gameDiv = document.querySelector(".gameDiv");
     gameDiv.innerHTML = `<div id="gameGrid">
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-    <div class="gridSquare"> </div>
-</div>`;
+    <div class="gridSquare" data-square = "1"> </div>
+    <div class="gridSquare" data-square = "2"> </div>
+    <div class="gridSquare" data-square = "3"> </div>
+    <div class="gridSquare" data-square = "4"> </div>
+    <div class="gridSquare" data-square = "5"> </div>
+    <div class="gridSquare" data-square = "6"> </div>
+    <div class="gridSquare" data-square = "7"> </div>
+    <div class="gridSquare" data-square = "8"> </div>
+    <div class="gridSquare" data-square = "9"> </div>
+    </div>`;
   }
 
-  return { updateVisualGrid, updateInfoBanner, showPlayingGrid, showForm };
-};
+  function addCellListeners() {
+    const cells = document.querySelectorAll(".gridSquare");
+    cells.forEach((cell) => {
+      cell.addEventListener("click", () => {
+        const squareNumber = cell.dataset.square;
+        handlePlay(squareNumber);
+      });
+    });
+  }
 
-/*
-// Player factory
-function createPlayer(nam, val) {
-  const name = nam;
-  const value = val;
-  return { name, value };
-}
+  function removeCellListeners() {
+    const cells = document.querySelectorAll(".gridSquare");
+    cells.forEach((cell) => {
+      cell.removeEventListener("click", handlePlay);
+    });
+  }
 
-// Cell factory
-function createCell() {
-  let filledBy = 0;
-
-  const getCellStatus = () => filledBy;
-  const setCellStatus = function (id) {
-    filledBy = id;
+  return {
+    updateVisualGrid,
+    updateInfoBanner,
+    showPlayingGrid,
+    showForm,
+    addCellListeners,
+    removeCellListeners,
   };
-  return { getCellStatus, setCellStatus };
-}
+})();
 
-  // Gameboard IIFE
-  const Gameboard = function () {
-    const size = 3;
-    let board = [];
+// Game board Module
+const Gameboard = (function () {
+  console.log("Gameboard ran");
+  const size = 3;
+  let board = [];
 
-    const getBoard = () => board;
+  const getBoard = () => board;
 
-    const resetBoard = function () {
-      board = [];
-      for (let i = 0; i < size; i++) {
-        board[i] = [];
-        for (let j = 0; j < size; j++) {
-          board[i].push(createCell());
-        }
+  const resetBoard = function () {
+    board = [];
+    for (let i = 0; i < size; i++) {
+      board[i] = [];
+      for (let j = 0; j < size; j++) {
+        board[i].push(createCell());
       }
-    };
-    return { getBoard, resetBoard };
+    }
   };
 
+  //Sets the board up
+  resetBoard();
 
-// Game IIFE
+  return { getBoard, resetBoard };
+})();
 
- Game = function () {
+// Game Module
+
+const Game = (function () {
+  console.log("Game ran");
+
+  //TODO: IMPLEMENT GETTING NAMES
   const name1 = "TestName1";
   const player1 = createPlayer(name1, "X");
-  console.log(player1);
-  const name2 = "TestName2"
+  const name2 = "TestName2";
   const player2 = createPlayer(name2, "O");
-  console.log(player2);
 
   let isRunning = true;
-  let turnCount = 0;
-  let currentPlayer;
-  while (isRunning) {
-    //Calculates player turn
-    currentPlayer = turnCount % 2 == 0 ? player1 : player2;
-    getPlay(turnCount, currentPlayer.name, currentPlayer.value);
+  let turnCount = 1;
+  console.log("test1");
+  //Sets playScreen and adds listeners to the grid
+  DisplayController.updateInfoBanner("Player 1's turn.");
+  DisplayController.showPlayingGrid();
+  DisplayController.addCellListeners();
+
+  const getCurrentPlayer = function () {
+    return turnCount % 2 == 0 ? player2 : player1;
+  };
+
+  const getOtherPlayer = function () {
+    return turnCount % 2 == 0 ? player1 : player2;
+  };
+
+  const increaseTurnCount = function () {
     turnCount++;
+  };
+
+  const setRunning = function (input) {
+    isRunning = input;
+  };
+
+  return { getCurrentPlayer, getOtherPlayer, increaseTurnCount, setRunning };
+  //TODO: incorporate
+})();
+
+function handlePlay(squareNum) {
+  //Converts to int
+  squareNum = parseInt(squareNum);
+
+  //Gets coordinate positions
+  const row = squareNum <= 3 ? 0 : squareNum <= 6 ? 1 : 2;
+  const col = [1, 4, 7].includes(squareNum)
+    ? 0
+    : [2, 5, 8].includes(squareNum)
+    ? 1
+    : 2;
+
+  //Gets other necessary values
+  const board = Gameboard.getBoard();
+  const val = Game.getCurrentPlayer().value;
+  const currentName = Game.getCurrentPlayer().name;
+  const otherName = Game.getOtherPlayer().name;
+
+  //Checks if the place isnt filled.
+  if (board[row][col].getCellStatus() == 0) {
+    
+    //Sets users input in the array
+    board[row][col].setCellStatus(val);
+    DisplayController.updateVisualGrid(squareNum, val);
+
     //Checks for victory
-    if (checkForWin()){
-      console.log (currentPlayer.name + " has won!")
-      isRunning = false;
-    }
-  }
-};
+    checkForWin(val) == true
+      ? DisplayController.updateInfoBanner(currentName + " has won!")
+      : DisplayController.updateInfoBanner(otherName + "'s turn.");
 
-//Function for play input
-function getPlay(turn, name, value) {
-  let filledCorrectly = false;
-  while (!filledCorrectly) {
-    //Gets the position in which to insert.
-    console.log("Turn " + turn + ", " + name + "'s turn.");
-    console.log("Enter row to modify");
-    let row = parseInt(prompt());
-    console.log("Enter column to modify");
-    let col = parseInt(prompt());
-
-    //Checks if the place isnt filled.
-    if (Gameboard.getBoard[row][col].getCellStatus() != 0) {
-      //Sets users input in the array
-      Gameboard.getBoard[row][col].setCellStatus(value);
-      filledCorrectly = true;
-    } else console.log("That spot is already filled.");
+    Game.increaseTurnCount();
+  } else {
+    DisplayController.updateInfoBanner("That spot is already filled.");
   }
 }
 
-function checkForWin(){
+function checkForWin(value) {
+  console.log("checkForWin ran");
   const board = Gameboard.getBoard();
   let hasWon = false;
+
+  //Loads cell statuses for easy checking
+  let statArray = [];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      statArray.push(board[i][j].getCellStatus());
+    }
+  }
+
   //Check for rows
-  for (let i = 0; i<3; i++){
-    if (board[i][0].value == board[i][1].value == board[i][2].value) hasWon = true;
+  let n = 0;
+  for (let i = 0; i < 3; i++) {
+    if (
+      statArray[n] == statArray[n + 1] &&
+      statArray[n] == statArray[n + 2] &&
+      statArray[n] == value
+    ) {
+      console.log(" a is true");
+      hasWon = true;
+    }
+    n += 3;
   }
   //Check for columns
-  for (let i = 0; i<3; i++){
-    if (board[0][i].value == board[1][i].value == board[2][i].value) hasWon = true;
+  n = 0;
+  for (let i = 0; i < 3; i++) {
+    if (
+      statArray[n] == statArray[n + 3] &&
+      statArray[n] == statArray[n + 3] &&
+      statArray[n] == value
+    ) {
+      console.log(" b is true");
+      hasWon = true;
+    }
   }
-  //Check for diagonals 
-  if (board[0][0].value == board[1][1] == board[2][2] || board[0][2].value == board[1][1].value == board[2][0].value) hasWon = true;
+  //Check for diagonals
+  if (
+    (statArray[0] == statArray[4] &&
+      statArray[0] == statArray[8] &&
+      statArray[2] == value) ||
+    (statArray[2] == statArray[4] &&
+      statArray[2] == statArray[6] &&
+      statArray[2] == value)
+  ) {
+    console.log(" c is true");
+    hasWon = true;
+  }
+
   return hasWon;
 }
-
- let myGame = Game();
- */
