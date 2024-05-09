@@ -20,6 +20,23 @@ footer {
   gap: 20px;
 }
 
+form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  gap: 20px;
+}
+
+input{
+  background-color: #f0f0f0;
+  color: #242424;
+  padding: 1rem;
+  border: 2px solid red;
+  border-radius: 2rem;
+  height: 1rem;
+}
+
 body{
   font-family: Outfit, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
   sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
