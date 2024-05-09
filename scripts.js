@@ -191,6 +191,20 @@ function handlePlay(squareNum) {
 function handleVictory(player) {
   DisplayController.updateInfoBanner(player.name + " has won!");
   DisplayController.removeCellListeners();
+
+  //Add button for resetting
+  let section = document.querySelector(".extraContent")
+  section.innerHTML= `<button class="resetButton" type="button">Play Again!</button>`;
+  //Add corresponding listener
+  let resetBtn = document.querySelector(".resetButton");
+  resetBtn.addEventListener('click', resetGame);
+}
+
+function resetGame(){
+  //removes reset button from DOM
+  let section = document.querySelector(".extraContent")
+  section.innerHTML= ""
+  Game.startGame();
 }
 
 function checkForWin(value) {
@@ -214,7 +228,6 @@ function checkForWin(value) {
       statArray[n] == statArray[n + 2] &&
       statArray[n] == value
     ) {
-      console.log(" a is true");
       hasWon = true;
     }
     n += 3;
@@ -224,23 +237,22 @@ function checkForWin(value) {
   for (let i = 0; i < 3; i++) {
     if (
       statArray[n] == statArray[n + 3] &&
-      statArray[n] == statArray[n + 3] &&
+      statArray[n] == statArray[n + 6] &&
       statArray[n] == value
     ) {
-      console.log(" b is true");
       hasWon = true;
     }
+    n += 1;
   }
   //Check for diagonals
   if (
     (statArray[0] == statArray[4] &&
       statArray[0] == statArray[8] &&
-      statArray[2] == value) ||
+      statArray[0] == value) ||
     (statArray[2] == statArray[4] &&
       statArray[2] == statArray[6] &&
       statArray[2] == value)
   ) {
-    console.log(" c is true");
     hasWon = true;
   }
 
