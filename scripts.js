@@ -116,7 +116,8 @@ const Gameboard = (function () {
 // Game Module
 
 const Game = (function () {
-  let name1, player1, name2, player2, turnCount;
+  let name1, player1, name2, player2;
+  let turnCount = 1;
 
   const getCurrentPlayer = function () {
     return turnCount % 2 == 0 ? player2 : player1;
@@ -133,26 +134,24 @@ const Game = (function () {
   const getTurnCount = () => turnCount;
 
   const startGame = function () {
+    turnCount = 1;
     //TODO: IMPLEMENT GETTING NAMES
     name1 = "TestName1";
     player1 = createPlayer(name1, "X");
     name2 = "TestName2";
     player2 = createPlayer(name2, "O");
-    turnCount = 1;
 
     //Sets playScreen and adds listeners to the grid
     Gameboard.resetBoard();
-    DisplayController.updateInfoBanner(
-      "Turn 1, " + name1 + "'s turn."
-    );
+    DisplayController.updateInfoBanner("Turn 1, " + name1 + "'s turn.");
     DisplayController.showPlayingGrid();
     DisplayController.addCellListeners();
   };
 
-  const handlePlay = function(squareNum) {
+  const handlePlay = function (squareNum) {
     //Converts to int
     squareNum = parseInt(squareNum);
-  
+
     //Gets coordinate positions
     const row = squareNum <= 3 ? 0 : squareNum <= 6 ? 1 : 2;
     const col = [1, 4, 7].includes(squareNum)
@@ -160,60 +159,64 @@ const Game = (function () {
       : [2, 5, 8].includes(squareNum)
       ? 1
       : 2;
-  
+
     //Gets other necessary values
     const board = Gameboard.getBoard();
     const val = Game.getCurrentPlayer().value;
     const currentName = Game.getCurrentPlayer().name;
     const otherName = Game.getOtherPlayer().name;
-  
+
     //Checks if the place isnt filled.
     if (board[row][col].getCellStatus() == 0) {
       //Sets users input in the array
       board[row][col].setCellStatus(val);
       DisplayController.updateVisualGrid(squareNum, val);
-  
-      Game.increaseTurnCount();
+
       //Checks for victory
-      checkForWin(val) == true
-        ? handleEnding(Game.getCurrentPlayer(), true)
-        : DisplayController.updateInfoBanner(
+      if (checkForWin(val) == true) {
+        handleEnding(Game.getCurrentPlayer(), true);
+      } else {
+        Game.increaseTurnCount();
+        if (Game.getTurnCount() == 10) {
+          //Checks for stalemate
+          handleEnding(Game.getCurrentPlayer(), false);
+        } else {
+          DisplayController.updateInfoBanner(
             "Turn " + Game.getTurnCount() + ", " + otherName + "'s turn."
           );
-  
-      //Checks for stalemate
-      if (Game.getTurnCount() == 10) handleEnding(Game.getCurrentPlayer(), false);
+        }
+      }
     } else {
       DisplayController.updateInfoBanner("That spot is already filled.");
     }
-  }
-  
-  const handleEnding = function(player, isVictory) {
+  };
+
+  const handleEnding = function (player, isVictory) {
     isVictory
       ? DisplayController.updateInfoBanner(player.name + " has won!")
       : DisplayController.updateInfoBanner("Its a tie!");
     DisplayController.removeCellListeners();
-  
+
     //Add button for resetting
     let section = document.querySelector(".extraContent");
     section.innerHTML = `<button class="resetButton" type="button">Play Again!</button>`;
     //Add corresponding listener
     let resetBtn = document.querySelector(".resetButton");
     resetBtn.addEventListener("click", resetGame);
-  }
-  
-  const resetGame = function() {
+  };
+
+  const resetGame = function () {
     //removes reset button from DOM
     let section = document.querySelector(".extraContent");
     section.innerHTML = "";
     Game.startGame();
-  }
-  
-  const checkForWin = function(value) {
+  };
+
+  const checkForWin = function (value) {
     console.log("checkForWin ran");
     const board = Gameboard.getBoard();
     let hasWon = false;
-  
+
     //Loads cell statuses for easy checking
     let statArray = [];
     for (let i = 0; i < 3; i++) {
@@ -221,7 +224,7 @@ const Game = (function () {
         statArray.push(board[i][j].getCellStatus());
       }
     }
-  
+
     //Check for rows
     let n = 0;
     for (let i = 0; i < 3; i++) {
@@ -231,6 +234,7 @@ const Game = (function () {
         statArray[n] == value
       ) {
         hasWon = true;
+        console.log("test a");
       }
       n += 3;
     }
@@ -243,6 +247,7 @@ const Game = (function () {
         statArray[n] == value
       ) {
         hasWon = true;
+        console.log("test b");
       }
       n += 1;
     }
@@ -256,10 +261,11 @@ const Game = (function () {
         statArray[2] == value)
     ) {
       hasWon = true;
+      console.log("test c");
     }
-  
+
     return hasWon;
-  }
+  };
 
   return {
     getCurrentPlayer,
@@ -270,6 +276,5 @@ const Game = (function () {
     handlePlay,
   };
 })();
-
 
 Game.startGame();
